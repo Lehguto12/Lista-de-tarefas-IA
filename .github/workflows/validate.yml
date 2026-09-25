@@ -1,0 +1,39 @@
+name: Validar projeto
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  validate-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "Lista de tarefas IA"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: "Lista de tarefas IA/package-lock.json"
+      - run: npm ci
+      - run: node --check src/server/index.js
+      - run: node --check src/server/controllers/taskController.js
+      - run: node --check src/server/routes/tasks.js
+
+  validate-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "Lista de tarefas IA/client"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: "Lista de tarefas IA/client/package-lock.json"
+      - run: npm ci
+      - run: npm run build
